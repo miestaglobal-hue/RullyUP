@@ -1,6 +1,32 @@
 import aiosqlite
 from config import DB_PATH
+import gspread
+import json
+import os
+from datetime import datetime
 
+def _get_sheet():
+    creds_json = os.getenv("GOOGLE_CREDENTIALS")
+    creds = json.loads(creds_json)
+    gc = gspread.service_account_from_dict(creds)
+    return gc.open_by_key(os.getenv("SHEET_ID")).sheet1
+
+async def mirror_to_sheets(user_id: int, username: str, data: dict):
+    try:
+        sheet = _get_sheet()
+        sheet.append_row([
+            str(user_id),
+            username,
+            data.get("name", ""),
+            data.get("gender", ""),
+            data.get("sport", ""),
+            data.get("level", ""),
+            data.get("city", ""),
+            data.get("play_time", ""),
+            datetime.now().strftime("%Y-%m-%d %H:%M")
+        ])
+    except Exception as e:
+        pass
 
 async def init_db():
     async with aiosqlite.connect(DB_PATH) as db:
