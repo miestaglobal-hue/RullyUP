@@ -1,3 +1,4 @@
+from database import upsert_user, mirror_to_sheets
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
@@ -116,6 +117,12 @@ async def _finish_registration(msg: Message, state: FSMContext, photo_id):
     data["photo_id"] = photo_id
     data["looking_for"] = "👥 Всех"
     await upsert_user(msg.from_user.id, msg.from_user.username or "", data)
+   async def _finish_registration(msg: Message, state: FSMContext, photo_id):
+    data = await state.get_data()
+    data["photo_id"] = photo_id
+    data["looking_for"] = "👥 Всех"
+    await upsert_user(msg.from_user.id, msg.from_user.username or "", data)
+    await mirror_to_sheets(msg.from_user.id, msg.from_user.username or "", data)
     await state.clear()
     await msg.answer(
         f"✅ <b>Профиль создан!</b>\n\n"
