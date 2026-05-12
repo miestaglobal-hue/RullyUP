@@ -1,11 +1,10 @@
-from database import upsert_user, mirror_to_sheets
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from config import SPORTS, LEVELS, TIMES, GENDERS
-from database import upsert_user
+from database import upsert_user, mirror_to_sheets
 from keyboards import kb_sports, kb_levels, kb_times, kb_genders, kb_skip_photo, kb_main_menu, kb_remove
 
 router = Router()
@@ -113,11 +112,6 @@ async def step_photo_invalid(msg: Message):
 
 
 async def _finish_registration(msg: Message, state: FSMContext, photo_id):
-    data = await state.get_data()
-    data["photo_id"] = photo_id
-    data["looking_for"] = "👥 Всех"
-    await upsert_user(msg.from_user.id, msg.from_user.username or "", data)
-   async def _finish_registration(msg: Message, state: FSMContext, photo_id):
     data = await state.get_data()
     data["photo_id"] = photo_id
     data["looking_for"] = "👥 Всех"
